@@ -224,3 +224,25 @@ Translates updates into Telugu, Hindi, Tamil, and Kannada.
 1. Install Vercel CLI: `npm i -g vercel`
 2. Run deployment: `vercel` inside project root.
 3. Configure `GEMINI_API_KEY` under project settings in your Vercel Dashboard.
+
+---
+
+## 6. Engineering Enhancements & Compliance
+
+### Code Quality & Fast Refresh
+- **Provider & Context Separation**: Context objects (`ToastContext.ts`) are decoupled from their Provider component modules (`ToastProvider.tsx`), eliminating Fast Refresh compiler warnings.
+- **Hook Isolation**: Custom hooks (e.g. `useToast.ts`, `useAuth.ts`, `useVoiceSpeech.ts`) are located in `src/hooks/` for reusability.
+
+### WCAG 2.2 AA Accessibility Parameters
+- **Anchor Skip Links**: Accessible keyboard navigation includes a skip link routing keyboard focus straight to main page regions.
+- **Landmark Segregations**: Expressive landmarks (`role="application"`, `role="region"`, `role="list"`, `role="listitem"`) guide screen readers.
+- **Descriptive Legends**: Colored visual status indicators and line coordinates contain `sr-only` translations.
+
+### Enterprise Security Design
+- **Content Security Policies**: Helmet protects routes from insecure script injection while authorizing Firebase Firestore sockets, Google Fonts, and Carto maps.
+- **Role-Based Access Controls (RBAC)**: Firestore configuration (`useRealtimeCollection`) dynamically parses authenticated tokens, preventing spectators from executing unauthorized updates on matches, gates, or parking zones.
+
+### High-Coverage Test Suites
+- Verifies authentication operations, wayfinding shortest paths, WCAG compliance, toast rendering lists, loading states, and error handling.
+- Run `npm test -- --run` to execute all 46+ tests.
+
