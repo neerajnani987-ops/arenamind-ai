@@ -14,6 +14,7 @@ import {
   Flame
 } from 'lucide-react';
 import { useRealtimeCollection } from '../firebase/config';
+import type { Alert, UserRole } from '../types';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -27,7 +28,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   // Load real-time alerts for the notifications bell
-  const { data: alerts, updateItem } = useRealtimeCollection<any>('alerts');
+  const { data: alerts, updateItem } = useRealtimeCollection<Alert>('alerts');
   const activeAlerts = alerts.filter(a => a.status === 'active');
 
   const menuItems = [
@@ -46,7 +47,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedRole = e.target.value as any;
+    const selectedRole = e.target.value as UserRole;
     switchRole(selectedRole);
   };
 
@@ -114,7 +115,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
               <select
                 value={user.role}
                 onChange={handleRoleChange}
-                className="bg-transparent text-xs text-indigo-300 font-semibold focus:outline-none cursor-pointer border-none p-0 pr-6 outline-none focus:ring-1 focus:ring-indigo-500 rounded"
+                className="bg-transparent text-xs text-indigo-300 font-semibold cursor-pointer border-none p-0 pr-6 outline-none focus:ring-2 focus:ring-indigo-500 focus:outline-none rounded"
                 id="role-select-dropdown"
               >
                 <option className="bg-[#0f172a] text-white" value="spectator">Spectator Dashboard</option>
@@ -304,7 +305,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 id="mobile-role-select"
                 value={user.role}
                 onChange={handleRoleChange}
-                className="bg-transparent text-xs text-indigo-300 font-bold focus:outline-none"
+                className="bg-transparent text-xs text-indigo-300 font-bold focus:ring-2 focus:ring-indigo-500 focus:outline-none rounded px-1"
               >
                 <option value="spectator">Spectator Dashboard</option>
                 <option value="organizer">Organizer Operations</option>

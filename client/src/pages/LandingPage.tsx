@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { ProblemSolutionBenefit } from '../components/ui/ProblemSolutionBenefit';
 import { 
   ShieldCheck, 
   Languages, 
@@ -43,7 +44,8 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-16 py-6 text-white max-w-6xl mx-auto">
+    <div className="space-y-12 py-6 text-white max-w-6xl mx-auto">
+      <ProblemSolutionBenefit page="landing" />
       
       {/* Hero Section */}
       <section className="text-center relative py-12 md:py-20 px-4 rounded-3xl overflow-hidden glass-panel border border-white/5 shadow-glass">

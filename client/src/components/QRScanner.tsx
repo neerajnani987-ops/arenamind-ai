@@ -1,61 +1,11 @@
 import React, { useState, useCallback } from 'react';
 import { QrCode, CheckCircle, Navigation } from 'lucide-react';
 import type { Ticket } from '../types';
+import { mockTickets } from '../utils/constants';
 
 interface QRScannerProps {
   onScanSuccess: (data: Ticket) => void;
 }
-
-const mockTickets = [
-  {
-    ticketId: "TKT-FIFA-2026-A120",
-    holderName: "Sam Spectator",
-    seat: "Seat A-120",
-    tier: "Lower Tier 1 Concourse",
-    gate: "gate-a",
-    gateName: "Gate A (North)",
-    parkingZone: "Zone A (North)",
-    routeDetails: {
-      path: ["Gate A (North)", "Lower Tier 1 Concourse", "Seat A-120 (Tier 1)"],
-      coordinates: [
-        [12.9780, 77.5910],
-        [12.9778, 77.5912],
-        [12.9776, 77.5914]
-      ] as [number, number][],
-      directions: [
-        "Scan ticket at Gate A barcode reader.",
-        "Walk straight through the north concourse entry point.",
-        "Seat A-120 is 30 meters ahead in Section A, Row 12."
-      ],
-      estimatedTimeMin: 2,
-      wheelchair: true
-    }
-  },
-  {
-    ticketId: "TKT-FIFA-2026-VIP7",
-    holderName: "Olivia Organizer",
-    seat: "VIP Lounge Sector 5",
-    tier: "Middle Tier 2 Concourse",
-    gate: "gate-e",
-    gateName: "Gate E (VVIP)",
-    parkingZone: "Zone A (North)",
-    routeDetails: {
-      path: ["Gate E (VVIP)", "Middle Tier 2 Concourse", "VIP Lounge Sector 5"],
-      coordinates: [
-        [12.9790, 77.5915],
-        [12.9782, 77.5915],
-        [12.9783, 77.5922]
-      ] as [number, number][],
-      directions: [
-        "Enter through the exclusive VVIP gate lobby.",
-        "Take elevator 3 to Level 2.",
-        "VIP Lounge is directly on your right."
-      ],
-      estimatedTimeMin: 1,
-      wheelchair: true
-    }
-  }
-];
 
 export const QRScanner: React.FC<QRScannerProps> = React.memo(({ onScanSuccess }) => {
   const [isScanning, setIsScanning] = useState(false);

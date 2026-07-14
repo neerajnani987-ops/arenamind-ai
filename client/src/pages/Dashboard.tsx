@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { apiService } from '../services/api';
-import type { PredictionResult, UserRole } from '../types';
+import type { PredictionResult, UserRole, Gate, Alert, Match } from '../types';
 import { useRealtimeCollection } from '../firebase/config';
+import { ProblemSolutionBenefit } from '../components/ui/ProblemSolutionBenefit';
 import { 
   Users, 
   DoorOpen, 
@@ -65,9 +66,9 @@ export const Dashboard: React.FC = () => {
   }
 
   // Load real-time collections
-  const { data: gates } = useRealtimeCollection<any>('gates');
-  const { data: alerts } = useRealtimeCollection<any>('alerts');
-  const { data: matches } = useRealtimeCollection<any>('matches');
+  const { data: gates } = useRealtimeCollection<Gate>('gates');
+  const { data: alerts } = useRealtimeCollection<Alert>('alerts');
+  const { data: matches } = useRealtimeCollection<Match>('matches');
 
   // Predictions states
   const [predictions, setPredictions] = useState<PredictionResult | null>(null);
@@ -75,8 +76,8 @@ export const Dashboard: React.FC = () => {
 
   // Active metrics
   const totalSpectators = matches.length > 0 ? matches[0].spectatorCount : 68420;
-  const openGates = gates.filter((g: any) => g.status === 'open').length;
-  const maxWaitTime = gates.length > 0 ? Math.max(...gates.map((g: any) => g.waitTime)) : 0;
+  const openGates = gates.filter((g: Gate) => g.status === 'open').length;
+  const maxWaitTime = gates.length > 0 ? Math.max(...gates.map((g: Gate) => g.waitTime)) : 0;
   
   const activeMedAlerts = alerts.filter(a => a.type === 'medical' && a.status === 'active').length;
   const activeSecAlerts = alerts.filter(a => a.type === 'security' && a.status === 'active').length;
@@ -137,6 +138,7 @@ export const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <ProblemSolutionBenefit page="dashboard" />
       {/* Access Warning Notification */}
       {permissionError && (
         <div className="p-4 rounded-xl border border-rose-500/20 bg-rose-950/20 text-rose-300 flex items-center space-x-3 text-xs shadow-neon-rose" role="alert">

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { StadiumMap } from '../../components/StadiumMap';
 import { apiService } from '../../services/api';
-import type { RouteResult, Alert, Gate } from '../../types';
+import type { RouteResult, Alert, Gate, TranslationResult } from '../../types';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { sanitizeInput } from '../../utils/security';
@@ -18,7 +18,7 @@ export const OrganizerDashboard: React.FC = React.memo(() => {
   // Announcement states
   const [announcementText, setAnnouncementText] = useState('');
   const [isTranslating, setIsTranslating] = useState(false);
-  const [translatedCards, setTranslatedCards] = useState<any | null>(null);
+  const [translatedCards, setTranslatedCards] = useState<TranslationResult['translations'] | null>(null);
 
   // Evacuation states
   const [evacMode, setEvacMode] = useState(false);
@@ -61,7 +61,7 @@ export const OrganizerDashboard: React.FC = React.memo(() => {
     });
 
     // 2. Set all gates status to open for egress
-    gates.forEach((gate: any) => {
+    gates.forEach((gate: Gate) => {
       updateGate(gate.id, { status: 'open', currentFlow: 999, queueLength: 0 });
     });
 
@@ -77,7 +77,7 @@ export const OrganizerDashboard: React.FC = React.memo(() => {
   const cancelEvacuation = useCallback(() => {
     setEvacMode(false);
     setEvacRoute(null);
-    alerts.forEach((alert: any) => {
+    alerts.forEach((alert: Alert) => {
       if (alert.severity === 'critical') {
         updateAlert(alert.id, { status: 'resolved' });
       }
@@ -154,7 +154,7 @@ export const OrganizerDashboard: React.FC = React.memo(() => {
             {activeAlerts.length === 0 ? (
               <div className="text-center py-4 text-xs text-white/30">All systems green. No active alarms.</div>
             ) : (
-              activeAlerts.map((alert: any) => (
+              activeAlerts.map((alert: Alert) => (
                 <div key={alert.id} className="p-2 rounded bg-white/5 border border-white/5 text-[10px] space-y-1">
                   <div className="flex items-center justify-between font-bold">
                     <span className="text-rose-400 capitalize">{alert.type} Incident</span>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { emulatedAuth } from '../firebase/config';
 import type { EmulatedUser } from '../firebase/config';
+import type { UserRole } from '../types';
 import { AuthContext } from './AuthContext';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -15,7 +16,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return unsubscribe;
   }, []);
 
-  const login = async (email: string, roleForced?: string) => {
+  const login = async (email: string, roleForced?: UserRole) => {
     setLoading(true);
     try {
       const res = await emulatedAuth.signInWithEmailAndPassword(email, roleForced);
@@ -26,7 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signup = async (email: string, displayName: string, role: string) => {
+  const signup = async (email: string, displayName: string, role: UserRole) => {
     setLoading(true);
     try {
       const res = await emulatedAuth.createUserWithEmailAndPassword(email, displayName, role);

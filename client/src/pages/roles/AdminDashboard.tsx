@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useRealtimeCollection } from '../../firebase/config';
-import type { Match, Gate, Alert } from '../../types';
+import type { Match, Gate, Alert, AIAuditLog } from '../../types';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { 
@@ -16,7 +16,7 @@ export const AdminDashboard: React.FC = React.memo(() => {
   const { data: matches, updateItem: updateMatch } = useRealtimeCollection<Match>('matches');
   const { data: gates, updateItem: updateGate } = useRealtimeCollection<Gate>('gates');
   const { addItem: addAlert } = useRealtimeCollection<Alert>('alerts');
-  const [aiLogs, setAiLogs] = useState<any[]>([]);
+  const [aiLogs, setAiLogs] = useState<AIAuditLog[]>([]);
 
   // Load weather and spectator variables from local settings
   const [weather, setWeather] = useState('Clear');

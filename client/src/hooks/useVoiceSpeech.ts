@@ -1,17 +1,48 @@
 import { useState, useEffect, useRef } from 'react';
 
+/**
+ * Event interface for browser speech recognition outputs.
+ */
+export interface SpeechRecognitionEvent {
+  results: {
+    [index: number]: {
+      [index: number]: {
+        transcript: string;
+      };
+    };
+  };
+}
+
+/**
+ * Interface representing standard browser SpeechRecognition interface.
+ */
+export interface SpeechRecognition {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onstart: (() => void) | null;
+  onerror: (() => void) | null;
+  onend: (() => void) | null;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  start: () => void;
+  stop: () => void;
+}
+
+/**
+ * Custom React hook to interface with browser speech recognition and synthesis APIs.
+ */
 export function useVoiceSpeech() {
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
 
   useEffect(() => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (SpeechRecognition) {
+    const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (SpeechRecognitionClass) {
       setSpeechSupported(true);
-      const rec = new SpeechRecognition();
+      const rec = new SpeechRecognitionClass() as SpeechRecognition;
       rec.continuous = false;
       rec.interimResults = false;
 
@@ -46,7 +77,7 @@ export function useVoiceSpeech() {
         kannada: 'kn-IN',
       };
       recognitionRef.current.lang = langMapping[language] || 'en-US';
-      recognitionRef.current.onresult = (event: any) => {
+      recognitionRef.current.onresult = (event: SpeechRecognitionEvent) => {
         const text = event.results[0][0].transcript;
         setTranscript(text);
         onResult(text);

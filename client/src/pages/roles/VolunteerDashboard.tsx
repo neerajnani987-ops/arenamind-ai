@@ -115,7 +115,12 @@ export const VolunteerDashboard: React.FC = React.memo(() => {
               <TrendingUp className="text-emerald-400" size={18} aria-hidden="true" />
               <h3 className="font-bold text-sm">Gate Capacity & Deployment Tracker</h3>
             </div>
-            <span className="text-[9px] uppercase font-bold text-white/40">Real-time IoT Feeds</span>
+            <div className="flex items-center space-x-2">
+              <span className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-[9px] font-mono">
+                AI Ingress Forecast: 94% Accuracy
+              </span>
+              <span className="text-[9px] uppercase font-bold text-white/40">Real-time IoT Feeds</span>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

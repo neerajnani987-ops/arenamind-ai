@@ -1,15 +1,16 @@
 import { createContext } from 'react';
 import type { EmulatedUser } from '../firebase/config';
+import type { UserRole } from '../types';
 
 export interface AuthContextType {
   user: EmulatedUser | null;
   loading: boolean;
-  login: (email: string, roleForced?: string) => Promise<EmulatedUser>;
-  signup: (email: string, displayName: string, role: string) => Promise<EmulatedUser>;
+  login: (email: string, roleForced?: UserRole) => Promise<EmulatedUser>;
+  signup: (email: string, displayName: string, role: UserRole) => Promise<EmulatedUser>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
   updateUser: (displayName: string, photoURL?: string) => Promise<void>;
-  switchRole: (role: 'spectator' | 'organizer' | 'volunteer' | 'security' | 'medical' | 'admin') => Promise<void>;
+  switchRole: (role: UserRole) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);

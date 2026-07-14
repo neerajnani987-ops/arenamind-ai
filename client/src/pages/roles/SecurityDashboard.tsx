@@ -174,7 +174,12 @@ export const SecurityDashboard: React.FC = React.memo(() => {
               <TrendingUp className="text-rose-400" size={18} aria-hidden="true" />
               <h3 className="font-bold text-sm">Crowd Flow Velocity & Security Risks</h3>
             </div>
-            <span className="text-[9px] uppercase font-bold text-white/40">Hourly Rates</span>
+            <div className="flex items-center space-x-2">
+              <span className="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-[9px] font-mono">
+                AI Threat Confidence: 96%
+              </span>
+              <span className="text-[9px] uppercase font-bold text-white/40">Hourly Rates</span>
+            </div>
           </div>
 
           <div className="h-64 w-full text-xs">

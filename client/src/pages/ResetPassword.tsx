@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Mail, CheckCircle, AlertCircle } from 'lucide-react';
+import { ProblemSolutionBenefit } from '../components/ui/ProblemSolutionBenefit';
 
 export const ResetPassword: React.FC = () => {
   const { resetPassword } = useAuth();
@@ -29,7 +30,9 @@ export const ResetPassword: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0f1d] px-4 py-8 text-white relative">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0f1d] px-4 py-8 text-white relative space-y-4">
+      <ProblemSolutionBenefit page="forgot-password" />
+
       <div className="w-full max-w-md rounded-2xl glass-panel p-8 border border-white/10 shadow-glass space-y-6">
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-extrabold tracking-tight">Reset Password</h2>

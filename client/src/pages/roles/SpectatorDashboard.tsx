@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { StadiumMap } from '../../components/StadiumMap';
 import { QRScanner } from '../../components/QRScanner';
 import { apiService } from '../../services/api';
-import type { RouteResult, Facility } from '../../types';
+import type { RouteResult, Facility, Ticket } from '../../types';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { sanitizeInput } from '../../utils/security';
@@ -63,7 +63,7 @@ export const SpectatorDashboard: React.FC = React.memo(() => {
     }
   }, [searchSeat]);
 
-  const handleScanSuccess = useCallback((decoded: any) => {
+  const handleScanSuccess = useCallback((decoded: Ticket) => {
     setActiveRoute(decoded.routeDetails);
     setChatHistory(prev => [
       ...prev,
@@ -186,7 +186,7 @@ export const SpectatorDashboard: React.FC = React.memo(() => {
             <Utensils size={14} className="text-white/40" aria-hidden="true" />
           </div>
           <div className="space-y-2">
-            {foodCourts.map((court: any) => (
+            {foodCourts.map((court: Facility) => (
               <div key={court.id} className="flex items-center justify-between text-[11px] p-2 bg-white/5 rounded-lg border border-white/5">
                 <div>
                   <span className="font-semibold block">{court.name}</span>

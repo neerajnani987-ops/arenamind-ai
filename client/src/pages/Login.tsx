@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Lock, Mail, AlertCircle } from 'lucide-react';
+import { ProblemSolutionBenefit } from '../components/ui/ProblemSolutionBenefit';
 
 export const Login: React.FC = () => {
   const { login } = useAuth();
@@ -54,10 +55,12 @@ export const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0f1d] px-4 py-8 text-white relative">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0f1d] px-4 py-8 text-white relative space-y-4">
       {/* Background elements */}
       <div className="absolute top-1/4 left-1/4 w-80 h-80 bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none animate-pulse-slow"></div>
       <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-violet-500/5 rounded-full blur-[120px] pointer-events-none animate-pulse-slow"></div>
+
+      <ProblemSolutionBenefit page="login" />
 
       <div className="w-full max-w-md rounded-2xl glass-panel p-8 border border-white/10 shadow-glass space-y-6">
         

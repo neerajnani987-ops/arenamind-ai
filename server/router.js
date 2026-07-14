@@ -233,6 +233,14 @@ const PRESET_TRANSLATIONS = {
 // 1. Conversational Chatbot Route
 router.post('/chat', async (req, res) => {
   const { message, language = 'english', userRole = 'spectator' } = req.body;
+  
+  if (!message || typeof message !== 'string' || message.length > 1000) {
+    return res.status(400).json({ error: 'Valid chat message (string, max 1000 chars) is required' });
+  }
+  if (typeof language !== 'string' || typeof userRole !== 'string') {
+    return res.status(400).json({ error: 'Valid language and userRole parameters are required' });
+  }
+
   const prompt = message ? message.toLowerCase() : '';
   const langKey = MULTILINGUAL_ANSWERS[language] ? language : 'english';
 
@@ -292,8 +300,8 @@ router.post('/chat', async (req, res) => {
 // 2. Multilingual Announcement Generator Route
 router.post('/translate', async (req, res) => {
   const { text } = req.body;
-  if (!text) {
-    return res.status(400).json({ error: 'Text prompt required' });
+  if (!text || typeof text !== 'string' || text.length > 1000) {
+    return res.status(400).json({ error: 'Valid text prompt (string, max 1000 chars) is required' });
   }
 
   const cleanText = text.toLowerCase().trim();
@@ -345,8 +353,14 @@ router.post('/translate', async (req, res) => {
 router.post('/routing', (req, res) => {
   const { startNode, endNode, routingType = 'fastest' } = req.body;
 
-  if (!startNode || !endNode) {
-    return res.status(400).json({ error: 'Start and end nodes are required' });
+  if (!startNode || !endNode || typeof startNode !== 'string' || typeof endNode !== 'string') {
+    return res.status(400).json({ error: 'Valid start and end node strings are required' });
+  }
+  if (typeof routingType !== 'string' || !['fastest', 'least_crowded', 'wheelchair'].includes(routingType)) {
+    return res.status(400).json({ error: 'Invalid routing type parameter' });
+  }
+  if (!STADIUM_NODES[startNode] || !STADIUM_NODES[endNode]) {
+    return res.status(400).json({ error: 'Start or end node does not exist in stadium configurations' });
   }
 
   const route = findShortestPath(startNode, endNode, routingType);
@@ -361,6 +375,13 @@ router.post('/routing', (req, res) => {
 // 4. Predictive Crowd & Wait Times Analytics Route
 router.post('/predict', async (req, res) => {
   const { weatherCondition = 'Clear', currentMatchSpectators = 68000 } = req.body;
+
+  if (typeof weatherCondition !== 'string') {
+    return res.status(400).json({ error: 'weatherCondition parameter must be a string' });
+  }
+  if (typeof currentMatchSpectators !== 'number' || currentMatchSpectators < 0 || isNaN(currentMatchSpectators)) {
+    return res.status(400).json({ error: 'currentMatchSpectators parameter must be a positive number' });
+  }
 
   // AI-driven simulation of time-series occupancy levels
   const hourlyOccupancy = [

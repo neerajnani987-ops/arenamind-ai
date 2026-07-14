@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Mail, Lock, User, AlertCircle, ShieldAlert } from 'lucide-react';
+import { ProblemSolutionBenefit } from '../components/ui/ProblemSolutionBenefit';
+import type { UserRole } from '../types';
 
 export const Signup: React.FC = () => {
   const { signup } = useAuth();
@@ -9,7 +11,7 @@ export const Signup: React.FC = () => {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState('spectator');
+  const [role, setRole] = useState<UserRole>('spectator');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -34,8 +36,10 @@ export const Signup: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0f1d] px-4 py-8 text-white relative">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0f1d] px-4 py-8 text-white relative space-y-4">
       <div className="absolute top-1/4 left-1/4 w-85 h-85 bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none animate-pulse-slow"></div>
+
+      <ProblemSolutionBenefit page="signup" />
 
       <div className="w-full max-w-md rounded-2xl glass-panel p-8 border border-white/10 shadow-glass space-y-6">
         
@@ -93,7 +97,7 @@ export const Signup: React.FC = () => {
               <ShieldAlert className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/30" size={14} />
               <select
                 value={role}
-                onChange={(e) => setRole(e.target.value)}
+                onChange={(e) => setRole(e.target.value as UserRole)}
                 className="w-full glass-input rounded-lg pl-10 pr-4 py-2 text-xs"
                 id="select-signup-role"
               >
