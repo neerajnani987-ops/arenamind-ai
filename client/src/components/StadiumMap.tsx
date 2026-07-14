@@ -223,28 +223,36 @@ export const StadiumMap: React.FC<StadiumMapProps> = ({
   }, [routeCoordinates]);
 
   return (
-    <div className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl bg-[#0f172a] border border-white/5 dark:border-white/5 light:border-black/5">
+    <div 
+      className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl bg-[#0f172a] border border-white/5 dark:border-white/5 light:border-black/5"
+      role="application"
+      aria-label="Interactive Stadium Map"
+    >
       <div ref={mapRef} className="w-full h-full min-h-[350px] md:min-h-[450px]" />
       
       {/* Controls Overlay Legend */}
-      <div className="absolute bottom-3 left-3 z-[1000] p-3 rounded-lg glass-panel text-xs space-y-1.5">
+      <div 
+        className="absolute bottom-3 left-3 z-[1000] p-3 rounded-lg glass-panel text-xs space-y-1.5"
+        role="region"
+        aria-label="Stadium Map Legend"
+      >
         <div className="font-semibold text-indigo-400 mb-1 border-b border-white/10 pb-1">Stadium Legend</div>
         <div className="flex items-center space-x-2">
-          <span className="w-2.5 h-2.5 rounded-full marker-pulse-emerald inline-block"></span>
-          <span>Normal / Low Crowds</span>
+          <span className="w-2.5 h-2.5 rounded-full marker-pulse-emerald inline-block" aria-hidden="true"></span>
+          <span><span className="sr-only">Green marker indicates </span>Normal / Low Crowds</span>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="w-2.5 h-2.5 rounded-full marker-pulse-rose inline-block"></span>
-          <span>High Congestion / Alert</span>
+          <span className="w-2.5 h-2.5 rounded-full marker-pulse-rose inline-block" aria-hidden="true"></span>
+          <span><span className="sr-only">Red marker indicates </span>High Congestion / Alert</span>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
-          <span>Medium Density</span>
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" aria-hidden="true"></span>
+          <span><span className="sr-only">Amber marker indicates </span>Medium Density</span>
         </div>
         {routeCoordinates.length > 0 && (
           <div className="flex items-center space-x-2">
-            <span className="w-4 h-0 border-t-2 border-dashed border-[#6366f1] inline-block"></span>
-            <span>Active Navigation Route</span>
+            <span className="w-4 h-0 border-t-2 border-dashed border-[#6366f1] inline-block" aria-hidden="true"></span>
+            <span><span className="sr-only">Dashed blue line indicates </span>Active Navigation Route</span>
           </div>
         )}
       </div>

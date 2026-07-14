@@ -274,6 +274,26 @@ export function useRealtimeCollection<T>(collectionName: string) {
   }, [collectionName]);
 
   const updateItem = (itemId: string, updates: Partial<T>) => {
+    const currentUser = emulatedAuth.getCurrentUser();
+    const userRole = currentUser ? currentUser.role : 'spectator';
+
+    // Role-based Access Control (RBAC) constraints
+    if (userRole === 'spectator') {
+      throw new Error(`Unauthorized: Spectators do not have write access to the '${collectionName}' collection.`);
+    }
+
+    if (collectionName === 'matches' && !['organizer', 'admin'].includes(userRole)) {
+      throw new Error(`Unauthorized: Role '${userRole}' cannot modify matches.`);
+    }
+
+    if (collectionName === 'gates' && !['organizer', 'admin', 'security'].includes(userRole)) {
+      throw new Error(`Unauthorized: Role '${userRole}' cannot modify gate operations.`);
+    }
+
+    if (collectionName === 'facilities' && !['organizer', 'admin', 'medical'].includes(userRole)) {
+      throw new Error(`Unauthorized: Role '${userRole}' cannot modify facilities.`);
+    }
+
     const currentData = emulatedDb.getData(collectionName);
     const updated = currentData.map((item: any) => {
       if (item.id === itemId) {
@@ -285,6 +305,22 @@ export function useRealtimeCollection<T>(collectionName: string) {
   };
 
   const addItem = (item: Omit<T, 'id' | 'timestamp'> & Partial<{ id: string; timestamp: string }>) => {
+    const currentUser = emulatedAuth.getCurrentUser();
+    const userRole = currentUser ? currentUser.role : 'spectator';
+
+    // Spectators are only permitted to submit reports/incident alerts
+    if (userRole === 'spectator' && collectionName !== 'alerts') {
+      throw new Error(`Unauthorized: Spectators can only create support alerts.`);
+    }
+
+    if (collectionName === 'matches' && !['organizer', 'admin'].includes(userRole)) {
+      throw new Error(`Unauthorized: Role '${userRole}' cannot create matches.`);
+    }
+
+    if (collectionName === 'gates' && !['organizer', 'admin', 'security'].includes(userRole)) {
+      throw new Error(`Unauthorized: Role '${userRole}' cannot create gate records.`);
+    }
+
     const currentData = emulatedDb.getData(collectionName);
     const newItem = {
       id: `id_${Math.random().toString(36).substr(2, 9)}`,

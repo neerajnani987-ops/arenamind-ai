@@ -165,13 +165,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                   </button>
                 </div>
 
-                <div className="space-y-2.5 max-h-[250px] overflow-y-auto">
+                <div className="space-y-2.5 max-h-[250px] overflow-y-auto" role="list">
                   {activeAlerts.length === 0 ? (
-                    <div className="text-center py-4 text-xs text-white/40">No active incidents. Stadium normal.</div>
+                    <div className="text-center py-4 text-xs text-white/40" role="listitem">No active incidents. Stadium normal.</div>
                   ) : (
                     activeAlerts.map((alert) => (
                       <div 
                         key={alert.id} 
+                        role="listitem"
                         className={`p-2.5 rounded-lg border text-xs flex items-start space-x-2 ${
                           alert.severity === 'critical' ? 'bg-rose-500/10 border-rose-500/20 text-rose-300' :
                           alert.severity === 'high' ? 'bg-amber-500/10 border-amber-500/20 text-amber-300' :

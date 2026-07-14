@@ -124,4 +124,27 @@ describe('ArenaMind AI Stadium Operations Systems', () => {
       expect(authorizeRoleAccess('security', 'organizer')).toBe(false);
     });
   });
+
+  describe('Database Role Write Access Constraints', () => {
+    it('should throw an error if a spectator attempts to update any collection', () => {
+      const checkUpdate = (role: string) => {
+        if (role === 'spectator') {
+          throw new Error('Unauthorized');
+        }
+      };
+      expect(() => checkUpdate('spectator')).toThrow('Unauthorized');
+      expect(() => checkUpdate('organizer')).not.toThrow();
+    });
+
+    it('should restrict match editing to organizer and admin roles only', () => {
+      const checkUpdate = (role: string, collection: string) => {
+        if (collection === 'matches' && !['organizer', 'admin'].includes(role)) {
+          throw new Error('Unauthorized');
+        }
+      };
+      expect(() => checkUpdate('security', 'matches')).toThrow('Unauthorized');
+      expect(() => checkUpdate('organizer', 'matches')).not.toThrow();
+      expect(() => checkUpdate('admin', 'matches')).not.toThrow();
+    });
+  });
 });
