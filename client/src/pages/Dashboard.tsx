@@ -137,7 +137,7 @@ export const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <ProblemSolutionBenefit page="dashboard" />
       {/* Access Warning Notification */}
       {permissionError && (

@@ -133,6 +133,7 @@ class EmulatedAuth {
 // Database Mocking
 class EmulatedFirestore {
   private collectionListeners: Map<string, Set<(data: any[]) => void>> = new Map();
+  private cache: Map<string, any[]> = new Map();
 
   constructor() {
     this.initializeDefaultData();
@@ -140,6 +141,7 @@ class EmulatedFirestore {
 
   public reset() {
     localStorage.clear();
+    this.cache.clear();
     this.initializeDefaultData();
   }
 
@@ -176,9 +178,14 @@ class EmulatedFirestore {
   }
 
   getData(collection: string) {
+    if (this.cache.has(collection)) {
+      return this.cache.get(collection)!;
+    }
     const key = `arenamind_db_${collection}`;
     try {
-      return JSON.parse(localStorage.getItem(key) || '[]');
+      const data = JSON.parse(localStorage.getItem(key) || '[]');
+      this.cache.set(collection, data);
+      return data;
     } catch {
       return [];
     }
@@ -187,6 +194,7 @@ class EmulatedFirestore {
   saveData(collection: string, data: any[]) {
     const key = `arenamind_db_${collection}`;
     localStorage.setItem(key, JSON.stringify(data));
+    this.cache.set(collection, data);
     this.notifyCollection(collection);
   }
 

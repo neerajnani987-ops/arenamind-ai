@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { StadiumMap } from '../../components/StadiumMap';
 import { apiService } from '../../services/api';
 import type { RouteResult, Alert, Gate, TranslationResult } from '../../types';
@@ -27,7 +27,7 @@ export const OrganizerDashboard: React.FC = React.memo(() => {
   // Load collections
   const { data: gates, updateItem: updateGate } = useRealtimeCollection<Gate>('gates');
   const { data: alerts, addItem: addAlert, updateItem: updateAlert } = useRealtimeCollection<Alert>('alerts');
-  const activeAlerts = alerts.filter(a => a.status === 'active');
+  const activeAlerts = useMemo(() => alerts.filter(a => a.status === 'active'), [alerts]);
 
   const handleGenerateTranslations = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();

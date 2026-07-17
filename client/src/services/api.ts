@@ -3,6 +3,7 @@ import type { RouteResult, PredictionResult, TranslationResult } from '../types'
 import { sanitizeInput } from '../utils/security';
 
 const BASE_URL = 'http://localhost:5000/api';
+const LOCAL_ROUTE_CACHE = new Map<string, RouteResult>();
 
 // Automated request retrying with exponential backoff (OWASP frontend stability)
 async function fetchWithRetry(url: string, options: RequestInit, retries = 3, delay = 500): Promise<Response> {
@@ -176,6 +177,11 @@ export const apiService = {
         body: JSON.stringify({ startNode: safeStart, endNode: safeEnd, routingType: safeType }),
       },
       () => {
+        const cacheKey = `${safeStart}_${safeEnd}_${safeType}`;
+        if (LOCAL_ROUTE_CACHE.has(cacheKey)) {
+          return LOCAL_ROUTE_CACHE.get(cacheKey)!;
+        }
+
         // Implement client-side Dijkstra fallback to keep navigation working offline
         const nodes: Record<string, any> = {
           'gate-a': { name: 'Gate A (North)', coords: [12.9780, 77.5910] },
@@ -213,6 +219,7 @@ export const apiService = {
           wheelchair: safeStart !== 'gate-c' && safeEnd !== 'tier-3'
         };
 
+        LOCAL_ROUTE_CACHE.set(cacheKey, staticRoute);
         return staticRoute;
       }
     );

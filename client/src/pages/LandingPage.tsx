@@ -44,7 +44,7 @@ export const LandingPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-12 py-6 text-white max-w-6xl mx-auto">
+    <div className="space-y-12 py-6 text-white max-w-6xl mx-auto animate-fade-in">
       <ProblemSolutionBenefit page="landing" />
       
       {/* Hero Section */}

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { StadiumMap } from '../../components/StadiumMap';
 import { useRealtimeCollection } from '../../firebase/config';
 import { apiService } from '../../services/api';
@@ -17,7 +17,7 @@ import {
 
 export const MedicalDashboard: React.FC = React.memo(() => {
   const { data: alerts, updateItem: updateAlert } = useRealtimeCollection<Alert>('alerts');
-  const medicalAlerts = alerts.filter(a => a.type === 'medical' && a.status === 'active');
+  const medicalAlerts = useMemo(() => alerts.filter(a => a.type === 'medical' && a.status === 'active'), [alerts]);
 
   const [activeDispatchRoute, setActiveDispatchRoute] = useState<RouteResult | null>(null);
   const [selectedIncident, setSelectedIncident] = useState<Alert | null>(null);

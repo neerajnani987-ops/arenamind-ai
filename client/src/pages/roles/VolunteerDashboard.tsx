@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useRealtimeCollection } from '../../firebase/config';
 import type { Gate } from '../../types';
 import { Card } from '../../components/ui/Card';
@@ -23,7 +23,7 @@ export const VolunteerDashboard: React.FC = React.memo(() => {
     'gate-e': 2,
   });
 
-  const highCongestionGates = gates.filter((g: Gate) => g.queueLength > 100);
+  const highCongestionGates = useMemo(() => gates.filter((g: Gate) => g.queueLength > 100), [gates]);
 
   const deployVolunteer = useCallback((gateId: string) => {
     // Increase local count

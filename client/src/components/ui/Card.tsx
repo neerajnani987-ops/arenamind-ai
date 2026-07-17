@@ -5,14 +5,15 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
 }
 
-export const Card: React.FC<CardProps> = ({ children, className = '', ...props }) => {
+export const Card: React.FC<CardProps> = React.memo(({ children, className = '', ...props }) => {
   return (
     <div
-      className={`glass-panel p-5 rounded-xl border border-white/10 shadow-glass transition-all ${className}`}
+      className={`glass-panel p-5 rounded-xl border border-white/10 shadow-glass card-hover-lift ${className}`}
       {...props}
     >
       {children}
     </div>
   );
-};
+});
+Card.displayName = 'Card';
 export default Card;

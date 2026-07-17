@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { useRealtimeCollection } from '../../firebase/config';
 import type { Alert } from '../../types';
 import { Card } from '../../components/ui/Card';
@@ -19,7 +19,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 export const SecurityDashboard: React.FC = React.memo(() => {
   // Database access
   const { data: alerts, addItem: addAlert, updateItem: updateAlert } = useRealtimeCollection<Alert>('alerts');
-  const activeSecurityAlerts = alerts.filter(a => a.status === 'active');
+  const activeSecurityAlerts = useMemo(() => alerts.filter(a => a.status === 'active'), [alerts]);
 
   // Form states
   const [incidentType, setIncidentType] = useState<Alert['type']>('security');

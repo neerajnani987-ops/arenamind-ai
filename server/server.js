@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import compression from 'compression';
 import router from './router.js';
 
 dotenv.config();
@@ -21,6 +22,7 @@ if (!process.env.GEMINI_API_KEY) {
 }
 
 const app = express();
+app.use(compression());
 const PORT = process.env.PORT || 5000;
 
 // 2. In-memory Rate Limiting Middleware

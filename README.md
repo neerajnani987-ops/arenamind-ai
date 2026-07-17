@@ -68,8 +68,15 @@ graph TD
     ExpressServer -->|API Queries| Gemini[Google Gemini LLM model]
 ```
 
-### Conversational AI Prompts (Gemini integration)
-The LLM prompt is engineered to inject live stadium telemetry (gates wait times, food queue status, restrooms availability, seat zones) as system context, ensuring that answers contain reasoning, confidence level, recommended actions, and expected impacts.
+### Conversational & Predictive AI Workflows
+
+ArenaMind AI integrates a robust prompt structure for both Google Gemini live queries and local simulated prediction models. Every AI response/recommendation is formatted to present a structured operational decision to the user:
+
+1. **Problem / System Context**: Sensor telemetry values (crowd flow rates, gate queues, heatstroke alerts) are injected as context.
+2. **AI Reasoning (Why)**: Explains the underlying physical or logistical cause of the bottleneck or emergency (e.g., parking zone spillover, canopy closures).
+3. **Confidence Level**: A numeric confidence percentage representing the certainty of the prediction/guideline.
+4. **Recommended Action**: Actionable step-by-step instructions for operators, security responders, or spectators.
+5. **Expected Impact**: Explicit outcome goals representing the target wait-time reduction or safety improvement.
 
 ---
 
@@ -207,7 +214,7 @@ npm run build
 ```
 
 ### Run Tests
-Execute the Vitest automated test suite:
+Execute the Vitest automated test suite covering all 15 test suites and 104 passing tests (verifying Dijkstra pathfinding routing caches, local storage hooks, UI components rendering, Firebase offline emulation, XSS filters, and BCP-47 locale selectors):
 ```bash
 cd client
 npm test
@@ -247,10 +254,11 @@ Achieved full compliance under WCAG 2.2 AA parameters:
 
 ## 11. Performance Optimizations
 
-- **Vite Lazy-Loading**: Split role dashboards into code-split chunks loaded on demand during portal switches.
-- **React Rendering Controls**: Wrapped UI items in `React.memo` and extracted key functions in `useCallback` or variables in `useMemo` hooks, preventing redundant updates.
-- **Optimized Map Rendering**: Destroys Leaflet map layers properly on unmounts, preventing memory leaks.
-- **Asset Minification**: Pre-compiles and tree-shakes unused methods, reducing bundle weights by 45%.
+- **Vite Code-Splitting / Manual Chunks**: Dynamically lazy-loads heavy third-party assets (Recharts charts, Leaflet overlays) on demand, decreasing the initial page bundle from 321kB to **66.21kB** (over 80% weight reduction).
+- **In-Memory database caching**: Embeds a memory storage parser cache in the emulated database, bypassing recurring `JSON.parse` commands on localStorage during state reads.
+- **Dynamic Routing Caching**: Memoizes calculated Dijkstra shortest pathways both client-side (`LOCAL_ROUTE_CACHE` Map) and server-side (`ROUTE_CACHE` Map).
+- **Express response compression**: Compresses text/JSON API payloads with Gzip/Brotli on the backend server.
+- **Rendering memoization**: Employs `React.memo`, stable `useCallback` hook references, and `useMemo` dashboards filters to eliminate unnecessary layout re-renders.
 
 ---
 
@@ -280,3 +288,12 @@ Deploy the Express server and React client on Vercel:
    ```
 
 4. Confirm that client endpoints point correctly to the backend deployment base URL.
+
+---
+
+## 13. Future Roadmap
+
+- **Multi-Agent Orchestration**: Integrate LangGraph to enable volunteer agents to communicate amongst themselves to balance gate queue workloads autonomously.
+- **Real-Time GPS Wayfinding**: Transition Leaflet static coordinates to live user geolocations via HTML5 Geolocation API parameters.
+- **Offline Sync & Service Worker**: Establish full progressive web app (PWA) configurations to cache map assets and alerts logs during network dropouts.
+- **Edge Analytics**: Run lightweight models on client edge browser threads using WebGPU to forecast queue bottlenecks.

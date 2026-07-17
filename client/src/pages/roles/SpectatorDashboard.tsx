@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { StadiumMap } from '../../components/StadiumMap';
 import { QRScanner } from '../../components/QRScanner';
 import { apiService } from '../../services/api';
@@ -30,7 +30,7 @@ export const SpectatorDashboard: React.FC = React.memo(() => {
   const [mapHeatmap, setMapHeatmap] = useState(false);
 
   const { data: facilities } = useRealtimeCollection<Facility>('facilities');
-  const foodCourts = facilities.filter(f => f.type === 'food_court');
+  const foodCourts = useMemo(() => facilities.filter(f => f.type === 'food_court'), [facilities]);
 
   const handleSendMessage = useCallback(async (e?: React.FormEvent) => {
     if (e) e.preventDefault();

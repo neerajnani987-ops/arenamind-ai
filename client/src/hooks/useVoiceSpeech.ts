@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 /**
  * Event interface for browser speech recognition outputs.
@@ -62,7 +62,7 @@ export function useVoiceSpeech() {
     }
   }, []);
 
-  const startListening = (language: string, onResult: (text: string) => void) => {
+  const startListening = useCallback((language: string, onResult: (text: string) => void) => {
     if (isSpeaking) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
@@ -89,15 +89,15 @@ export function useVoiceSpeech() {
         recognitionRef.current.stop();
       }
     }
-  };
+  }, [isSpeaking]);
 
-  const stopListening = () => {
+  const stopListening = useCallback(() => {
     if (recognitionRef.current) {
       recognitionRef.current.stop();
     }
-  };
+  }, []);
 
-  const speak = (text: string, language: string) => {
+  const speak = useCallback((text: string, language: string) => {
     if (!window.speechSynthesis) return;
     window.speechSynthesis.cancel();
 
@@ -116,14 +116,14 @@ export function useVoiceSpeech() {
     utterance.onerror = () => setIsSpeaking(false);
 
     window.speechSynthesis.speak(utterance);
-  };
+  }, []);
 
-  const stopSpeaking = () => {
+  const stopSpeaking = useCallback(() => {
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
       setIsSpeaking(false);
     }
-  };
+  }, []);
 
   return {
     isListening,

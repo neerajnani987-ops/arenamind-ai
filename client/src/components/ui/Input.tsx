@@ -6,7 +6,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
-export const Input: React.FC<InputProps> = ({
+export const Input: React.FC<InputProps> = React.memo(({
   label,
   error,
   className = '',
@@ -36,5 +36,6 @@ export const Input: React.FC<InputProps> = ({
       )}
     </div>
   );
-};
+});
+Input.displayName = 'Input';
 export default Input;

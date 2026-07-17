@@ -48,8 +48,15 @@ const STADIUM_EDGES = [
   ['gate-b', 'gate-c', 170, 6, true],
 ];
 
-// Graph routing calculation using Dijkstra
+// Graph routing calculation using Dijkstra with caching/memoization
+const ROUTE_CACHE = new Map();
+
 function findShortestPath(startNode, endNode, routingType = 'fastest') {
+  const cacheKey = `${startNode}_${endNode}_${routingType}`;
+  if (ROUTE_CACHE.has(cacheKey)) {
+    return ROUTE_CACHE.get(cacheKey);
+  }
+
   const distances = {};
   const previous = {};
   const nodes = new Set(Object.keys(STADIUM_NODES));
@@ -139,7 +146,7 @@ function findShortestPath(startNode, endNode, routingType = 'fastest') {
 
   const coordinates = path.map(nodeId => STADIUM_NODES[nodeId].coords);
 
-  return {
+  const result = {
     path: path.map(nodeId => STADIUM_NODES[nodeId].name),
     coordinates,
     directions,
@@ -152,6 +159,9 @@ function findShortestPath(startNode, endNode, routingType = 'fastest') {
       return edge ? edge[4] === true : true;
     })
   };
+
+  ROUTE_CACHE.set(cacheKey, result);
+  return result;
 }
 
 // ----------------------------------------------------

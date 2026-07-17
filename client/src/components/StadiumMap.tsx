@@ -29,7 +29,7 @@ const mapPoints = [
   { name: 'Security Post Echo', type: 'security', coords: [12.9773, 77.5909], details: 'Crowd management surveillance active.', crowdLevel: 'medium' },
 ];
 
-export const StadiumMap: React.FC<StadiumMapProps> = ({
+export const StadiumMap: React.FC<StadiumMapProps> = React.memo(({
   heatmapMode = false,
   selectedCategory = 'all',
   routeCoordinates = [],
@@ -235,5 +235,7 @@ export const StadiumMap: React.FC<StadiumMapProps> = ({
       <StadiumLegend hasRoute={routeCoordinates.length > 0} />
     </div>
   );
-};
+});
+
+StadiumMap.displayName = 'StadiumMap';
 export default StadiumMap;
