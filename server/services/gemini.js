@@ -1,20 +1,21 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 let genAI = null;
+let model = null;
+
 if (process.env.GEMINI_API_KEY) {
   genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 }
 
 export async function generateChatResponse(message, language, userRole, systemContext) {
-  if (!genAI) throw new Error('Gemini API key not configured');
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  if (!model) throw new Error('Gemini API key not configured');
   const result = await model.generateContent(`${systemContext}\n\nUser Question: ${message}`);
   return result.response.text();
 }
 
 export async function generateTranslationResponse(text) {
-  if (!genAI) throw new Error('Gemini API key not configured');
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  if (!model) throw new Error('Gemini API key not configured');
   const prompt = `
     Translate the following stadium announcement into English, Telugu, Hindi, Tamil, and Kannada.
     Keep the translations accurate and polite.
@@ -27,8 +28,7 @@ export async function generateTranslationResponse(text) {
 }
 
 export async function generatePredictionResponse(weatherCondition, currentMatchSpectators) {
-  if (!genAI) throw new Error('Gemini API key not configured');
-  const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+  if (!model) throw new Error('Gemini API key not configured');
   const prompt = `
     Synthesize stadium crowd management recommendations. 
     Weather: "${weatherCondition}". Spectator count: ${currentMatchSpectators}.
