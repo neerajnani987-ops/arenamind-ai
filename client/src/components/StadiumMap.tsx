@@ -160,7 +160,11 @@ export const StadiumMap: React.FC<StadiumMapProps> = React.memo(({
         iconAnchor: [8, 8],
       });
 
-      const marker = L.marker(point.coords as [number, number], { icon: customIcon });
+      const marker = L.marker(point.coords as [number, number], { 
+        icon: customIcon,
+        alt: point.name,
+        title: point.name
+      });
       
       const popupHtml = `
         <div class="p-2 max-w-xs text-sm">
@@ -182,6 +186,14 @@ export const StadiumMap: React.FC<StadiumMapProps> = React.memo(({
 
       marker.bindPopup(popupHtml);
       marker.addTo(mLayer);
+
+      // Add accessibility tags to the marker DOM element
+      const iconElement = marker.getElement();
+      if (iconElement) {
+        iconElement.setAttribute('aria-label', `Map location marker: ${point.name}. Category: ${point.type}. Details: ${point.details}`);
+        iconElement.setAttribute('role', 'button');
+        iconElement.setAttribute('tabindex', '0');
+      }
 
       marker.on('popupopen', () => {
         const button = document.getElementById(`btn-popup-${point.name.replace(/\s+/g, '-')}`);
@@ -214,6 +226,11 @@ export const StadiumMap: React.FC<StadiumMapProps> = React.memo(({
         lineCap: 'round',
         lineJoin: 'round',
       }).addTo(map);
+
+      const polyElement = poly.getElement();
+      if (polyElement) {
+        polyElement.setAttribute('aria-label', 'Active navigation route line path overlay on map');
+      }
 
       // Fit map bounds to show route
       const bounds = L.latLngBounds(routeCoordinates);

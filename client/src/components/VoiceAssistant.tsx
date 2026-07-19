@@ -19,6 +19,7 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = React.memo(({
   const [aiResponse, setAiResponse] = useState('');
   const [muteTextToSpeech, setMuteTextToSpeech] = useState(false);
   const [displayTranscript, setDisplayTranscript] = useState('');
+  const [textQuery, setTextQuery] = useState('');
 
   const {
     isListening,
@@ -50,6 +51,32 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = React.memo(({
       setAiResponse('Could not connect to ArenaMind services.');
     }
   }, [currentLanguage, userRole, onResponseReceived, muteTextToSpeech, speak]);
+
+  const handleTextSubmit = useCallback(async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!textQuery.trim()) return;
+
+    const query = textQuery.trim();
+    setTextQuery('');
+    
+    setDisplayTranscript(`Asked: "${query}"`);
+    setAiResponse('Thinking...');
+
+    try {
+      const res = await apiService.chat(query, currentLanguage, userRole);
+      setAiResponse(res.response);
+      
+      if (onResponseReceived) {
+        onResponseReceived(res.response);
+      }
+      
+      if (!muteTextToSpeech) {
+        speak(res.response, currentLanguage);
+      }
+    } catch {
+      setAiResponse('Could not connect to ArenaMind services.');
+    }
+  }, [textQuery, currentLanguage, userRole, onResponseReceived, muteTextToSpeech, speak]);
 
   const handleStartListening = useCallback(() => {
     setDisplayTranscript('Listening...');
@@ -171,6 +198,26 @@ export const VoiceAssistant: React.FC<VoiceAssistantProps> = React.memo(({
                 <p className="text-xs text-white/90 leading-relaxed font-sans" aria-live="assertive">{aiResponse}</p>
               </div>
             )}
+
+            {/* Keyboard text input fallback */}
+            <form onSubmit={handleTextSubmit} className="mb-4 flex items-center space-x-2 border-t border-white/10 pt-4">
+              <input
+                type="text"
+                value={textQuery}
+                onChange={(e) => setTextQuery(e.target.value)}
+                placeholder="Type your question..."
+                className="flex-1 glass-input rounded-lg px-3 py-2 text-xs bg-white/5 border border-white/10 focus:ring-2 focus:ring-indigo-500 outline-none text-white placeholder-white/30 font-sans"
+                aria-label="Type question for AI Assistant"
+                id="txt-voice-fallback-input"
+              />
+              <button
+                type="submit"
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-neon outline-none focus:ring-2 focus:ring-indigo-500"
+                id="btn-voice-fallback-submit"
+              >
+                Send
+              </button>
+            </form>
 
             {/* Footer Buttons */}
             <div className="flex items-center justify-center space-x-4">

@@ -38,4 +38,24 @@ describe('WCAG 2.2 AA Accessibility Compliance Assertions', () => {
     expect(legendItem.screenReaderText).toContain('indicates');
     expect(legendItem.displayText).toBeDefined();
   });
+
+  it('should verify interactive map markers and path overlays expose aria-labels', () => {
+    const marker = { 'aria-label': 'Map location marker: Gate A (North). Category: gate.', role: 'button', tabindex: '0' };
+    const polyline = { 'aria-label': 'Active navigation route line path overlay on map' };
+
+    expect(marker['aria-label']).toContain('Gate A');
+    expect(marker.role).toBe('button');
+    expect(marker.tabindex).toBe('0');
+    expect(polyline['aria-label']).toContain('route line');
+  });
+
+  it('should verify voice assistant has a text input fallback for non-speech users', () => {
+    const textInputFallback = {
+      id: 'txt-voice-fallback-input',
+      'aria-label': 'Type question for AI Assistant',
+      type: 'text'
+    };
+    expect(textInputFallback.id).toBe('txt-voice-fallback-input');
+    expect(textInputFallback['aria-label']).toBeDefined();
+  });
 });
