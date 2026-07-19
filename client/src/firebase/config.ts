@@ -341,7 +341,7 @@ export function useRealtimeCollection<T>(collectionName: string) {
 
     const currentData = emulatedDb.getData(collectionName);
     const newItem = {
-      id: `id_${Math.random().toString(36).substr(2, 9)}`,
+      id: `id_${crypto.randomUUID()}`,
       timestamp: new Date().toISOString(),
       ...item,
     };
