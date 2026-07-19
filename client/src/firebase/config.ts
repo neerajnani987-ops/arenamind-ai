@@ -18,8 +18,32 @@ export interface EmulatedUser {
   photoURL?: string;
   role: UserRole;
   ticketInfo?: Ticket | null;
+  passwordHash?: string;
 }
 
+/**
+ * Helper to compute SHA-256 hash using the Web Crypto API.
+ */
+async function hashPassword(password: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
+ * WARNING: EmulatedAuth is a local-only simulation of Firebase Authentication using localStorage.
+ * It does NOT provide production-grade security, secure credential storage, or cryptographic proof.
+ * 
+ * To migrate this to a real Firebase Authentication setup in production, the following is required:
+ * 1. Initialize the Firebase Client SDK using initializeApp(config).
+ * 2. Replace this class and emulatedAuth instance with imports from "firebase/auth", specifically
+ *    using standard SDK methods: signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, and updateProfile.
+ * 3. Enforce Server-Side rules (Firestore Security Rules or Firebase Functions) to perform authorization validation
+ *    on the server rather than relying on client-side logic.
+ * 4. Configure HTTPS and session token validation (JWT verification) for server communication.
+ */
 class EmulatedAuth {
   private listeners: Set<(user: EmulatedUser | null) => void> = new Set();
   private currentUser: EmulatedUser | null = null;
@@ -53,12 +77,25 @@ class EmulatedAuth {
     this.listeners.forEach((listener) => listener(this.currentUser));
   }
 
-  async signInWithEmailAndPassword(email: string, roleForced?: UserRole): Promise<EmulatedUser> {
+  async signInWithEmailAndPassword(email: string, password: string, roleForced?: UserRole): Promise<EmulatedUser> {
     // Find in local database or simulate
     const users = JSON.parse(localStorage.getItem('arenamind_db_users') || '[]');
     let user = users.find((u: EmulatedUser) => u.email.toLowerCase() === email.toLowerCase());
 
-    if (!user) {
+    const hashedVal = await hashPassword(password);
+
+    if (user) {
+      // Validate password if user has a password hash stored
+      if (user.passwordHash) {
+        if (user.passwordHash !== hashedVal) {
+          throw new Error('Invalid password');
+        }
+      } else {
+        // Store password hash for existing users who don't have one (e.g. pre-seeded users logging in the first time)
+        user.passwordHash = hashedVal;
+        localStorage.setItem('arenamind_db_users', JSON.stringify(users));
+      }
+    } else {
       // Create user on the fly if it matches a preset email format or default
       const username = email.split('@')[0];
       let resolvedRole: UserRole = 'spectator';
@@ -66,10 +103,11 @@ class EmulatedAuth {
         resolvedRole = username as UserRole;
       }
       user = {
-        uid: `uid_${Math.random().toString(36).substr(2, 9)}`,
+        uid: `uid_${crypto.randomUUID()}`,
         email,
         displayName: username.charAt(0).toUpperCase() + username.slice(1),
         role: roleForced || resolvedRole,
+        passwordHash: hashedVal,
       };
       users.push(user);
       localStorage.setItem('arenamind_db_users', JSON.stringify(users));
@@ -81,17 +119,20 @@ class EmulatedAuth {
     return user;
   }
 
-  async createUserWithEmailAndPassword(email: string, displayName: string, role: UserRole): Promise<EmulatedUser> {
+  async createUserWithEmailAndPassword(email: string, displayName: string, role: UserRole, password?: string): Promise<EmulatedUser> {
     const users = JSON.parse(localStorage.getItem('arenamind_db_users') || '[]');
     if (users.find((u: EmulatedUser) => u.email.toLowerCase() === email.toLowerCase())) {
       throw new Error('Email already in use');
     }
 
+    const passwordHash = password ? await hashPassword(password) : undefined;
+
     const newUser: EmulatedUser = {
-      uid: `uid_${Math.random().toString(36).substr(2, 9)}`,
+      uid: `uid_${crypto.randomUUID()}`,
       email,
       displayName,
       role,
+      passwordHash,
     };
 
     users.push(newUser);

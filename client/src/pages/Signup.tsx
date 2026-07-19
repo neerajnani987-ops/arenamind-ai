@@ -26,7 +26,7 @@ export const Signup: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      await signup(email, name, role);
+      await signup(email, name, role, password);
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Registration failed.');

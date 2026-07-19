@@ -32,7 +32,7 @@ export const Login: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      await login(email);
+      await login(email, password);
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || 'Login failed. Verify credentials.');
@@ -45,7 +45,7 @@ export const Login: React.FC = () => {
     setLoading(true);
     setError('');
     try {
-      await login(targetEmail);
+      await login(targetEmail, 'password');
       navigate('/dashboard');
     } catch {
       setError('Quick login failed.');

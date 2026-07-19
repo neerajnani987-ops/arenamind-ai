@@ -109,4 +109,24 @@ describe('AuthContext and User Session Management', () => {
     const emailB = 'admin@arenamind.ai';
     expect(emailA.toLowerCase()).toBe(emailB.toLowerCase());
   });
+
+  it('should verify password hashing and validation logic matches correctly', async () => {
+    const { emulatedAuth } = await import('../firebase/config');
+    localStorage.removeItem('arenamind_db_users');
+    localStorage.removeItem('arenamind_auth_user');
+    
+    const email = 'test-hash@example.com';
+    const password = 'my-secure-password';
+    
+    const registered = await emulatedAuth.createUserWithEmailAndPassword(email, 'Hash Test', 'spectator', password);
+    expect(registered.passwordHash).toBeDefined();
+    expect(registered.passwordHash).not.toBe(password);
+    
+    await emulatedAuth.signOut();
+    
+    const loggedIn = await emulatedAuth.signInWithEmailAndPassword(email, password);
+    expect(loggedIn.email).toBe(email);
+    
+    await expect(emulatedAuth.signInWithEmailAndPassword(email, 'wrong-password')).rejects.toThrow('Invalid password');
+  });
 });

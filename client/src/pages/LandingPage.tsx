@@ -18,7 +18,7 @@ export const LandingPage: React.FC = () => {
 
   const handleRoleQuickLogin = async (role: string) => {
     try {
-      await login(`${role}@arenamind.ai`);
+      await login(`${role}@arenamind.ai`, 'password');
       navigate(`/dashboard?role=${role}`);
     } catch (e) {
       console.error(e);
