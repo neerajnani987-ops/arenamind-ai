@@ -13,8 +13,12 @@ dotenv.config();
 const REQUIRED_ENV = ['PORT'];
 REQUIRED_ENV.forEach((envVar) => {
   if (!process.env[envVar]) {
-    console.error(`FATAL: Environment variable ${envVar} is missing.`);
-    process.exit(1);
+    if (process.env.NODE_ENV === 'test') {
+      process.env[envVar] = '5000';
+    } else {
+      console.error(`FATAL: Environment variable ${envVar} is missing.`);
+      process.exit(1);
+    }
   }
 });
 
@@ -134,6 +138,10 @@ app.use((err, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`ArenaMind AI Enterprise Server running on port ${PORT}`);
-});
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(PORT, () => {
+    console.log(`ArenaMind AI Enterprise Server running on port ${PORT}`);
+  });
+}
+
+export default app;
