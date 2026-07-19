@@ -79,7 +79,7 @@ const PRESET_TRANSLATIONS = {
 
 // 1. Conversational Chatbot Route
 router.post('/chat', async (req, res) => {
-  const { message, language = 'english', userRole = 'spectator' } = req.body;
+  const { message, language = 'english', userRole = 'spectator', telemetry } = req.body;
   
   if (!message || typeof message !== 'string' || message.length > 1000) {
     return res.status(400).json({ error: 'Valid chat message (string, max 1000 chars) is required' });
@@ -122,19 +122,24 @@ router.post('/chat', async (req, res) => {
   }
 
   // Fallback to offline rule dictionary
-  let reply = MULTILINGUAL_ANSWERS[langKey].default;
+  let answers = null;
+  if (telemetry) {
+    answers = getInterpolatedAnswers(language, telemetry);
+  }
+
+  let reply = answers ? answers.default : MULTILINGUAL_ANSWERS[langKey].default;
   if (prompt.includes('seat') || prompt.includes('a-120') || prompt.includes('ಆಸನ') || prompt.includes('సీట్') || prompt.includes('सीट') || prompt.includes('இருக்கை')) {
-    reply = MULTILINGUAL_ANSWERS[langKey].seat;
+    reply = answers ? answers.seat : MULTILINGUAL_ANSWERS[langKey].seat;
   } else if (prompt.includes('gate') || prompt.includes('ಗೇಟ್') || prompt.includes('గేట్') || prompt.includes('गेट') || prompt.includes('வாயில்')) {
-    reply = MULTILINGUAL_ANSWERS[langKey].gate;
+    reply = answers ? answers.gate : MULTILINGUAL_ANSWERS[langKey].gate;
   } else if (prompt.includes('park') || prompt.includes('ಪಾರ್ಕಿಂಗ್') || prompt.includes('పార్కింగ్') || prompt.includes('पार्किंग') || prompt.includes('பார்க்கింగ్')) {
-    reply = MULTILINGUAL_ANSWERS[langKey].parking;
+    reply = answers ? answers.parking : MULTILINGUAL_ANSWERS[langKey].parking;
   } else if (prompt.includes('food') || prompt.includes('buy') || prompt.includes('খাদ্য') || prompt.includes('ఆహారం') || prompt.includes('భोजन') || prompt.includes('உணவு')) {
-    reply = MULTILINGUAL_ANSWERS[langKey].food;
+    reply = answers ? answers.food : MULTILINGUAL_ANSWERS[langKey].food;
   } else if (prompt.includes('washroom') || prompt.includes('restroom') || prompt.includes('toilet') || prompt.includes('ಶೌಚಾಲಯ') || prompt.includes('వాష్ రూమ్') || prompt.includes('शौचालय') || prompt.includes('கழிவறை')) {
-    reply = MULTILINGUAL_ANSWERS[langKey].washroom;
+    reply = answers ? answers.washroom : MULTILINGUAL_ANSWERS[langKey].washroom;
   } else if (prompt.includes('exit') || prompt.includes('reach') || prompt.includes('ಮಾರ್ಗ') || prompt.includes('నిష్క్రమణ') || prompt.includes('निकास') || prompt.includes('வெளியேறும்')) {
-    reply = MULTILINGUAL_ANSWERS[langKey].exit;
+    reply = answers ? answers.exit : MULTILINGUAL_ANSWERS[langKey].exit;
   }
 
   return res.json({ response: reply, provider: 'mock_local' });
