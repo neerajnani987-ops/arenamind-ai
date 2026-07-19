@@ -165,7 +165,8 @@ arena-mind-ai/
 8. **Organizer Panel**: Broadcasters compile emergency directives and translate them instantly.
 9. **Conversational Assistant**: Speech or text widget utilizing Google Gemini to answer stadium questions.
 10. **Multilingual translation**: Supports English, Telugu, Hindi, Tamil, and Kannada.
-11. **Predictive Analytics**: Simulates hourly queue levels, risk percentages, and resource demand forecasts based on simulated rain, extreme heat, or spectator counts.
+11. **Telemetry-Driven Live Fallbacks**: Client and server feature a dynamic offline/online fallback engine that interpolates current live sensor states (such as active wait times, restroom queue levels, and parking occupancy percentages) into Telugu, Hindi, and English responses when the Gemini API is offline.
+12. **Dynamic Mathematical Predictive Analytics**: Endpoint uses physical weather multipliers and crowd load ratios to mathematically model hourly stadium ingress/egress curves, risk indices, and resource allocation requirements.
 
 ---
 
@@ -259,10 +260,12 @@ Achieved full compliance under WCAG 2.2 AA parameters:
 ## 11. Performance Optimizations
 
 - **Vite Code-Splitting / Manual Chunks**: Dynamically lazy-loads heavy third-party assets (Recharts charts, Leaflet overlays) on demand, decreasing the initial page bundle from 321kB to **66.21kB** (over 80% weight reduction).
+- **Hoisted Generative AI client scope**: Instantiates Google Generative AI client and model models at module scope initialization instead of per-request allocations.
+- **Dijkstra Complexity Reduction**: Replaced raw STADIUM_EDGES scans with a precompiled `ADJACENCY_MAP` generated once at load time, and array queue operations with a binary `MinHeap`, reducing pathfinding algorithm complexity to O((V+E) log V).
 - **In-Memory database caching**: Embeds a memory storage parser cache in the emulated database, bypassing recurring `JSON.parse` commands on localStorage during state reads.
 - **Dynamic Routing Caching**: Memoizes calculated Dijkstra shortest pathways both client-side (`LOCAL_ROUTE_CACHE` Map) and server-side (`ROUTE_CACHE` Map).
 - **Express response compression**: Compresses text/JSON API payloads with Gzip/Brotli on the backend server.
-- **Rendering memoization**: Employs `React.memo`, stable `useCallback` hook references, and `useMemo` dashboards filters to eliminate unnecessary layout re-renders.
+- **Rendering memoization**: Hoisted inline empty array literals (`EMPTY_ARRAY`) passed to Leaflet maps to prevent breaking React.memo checks, and employs stable `useCallback` and `useMemo` hooks.
 
 ---
 
