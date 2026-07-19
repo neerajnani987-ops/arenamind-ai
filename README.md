@@ -1,6 +1,6 @@
 # ArenaMind AI - Enterprise Smart Stadium Platform
 
-ArenaMind AI is an enterprise-grade, production-ready full-stack stadium operations platform designed for massive tournament venues. The application leverages real-time IoT sensors, Dijkstra indoor routing graphs, role-based access portals, and conversational LLM integrations to manage crowd densities, safety alerts, and volunteer crew assignments.
+ArenaMind AI is a full-stack stadium operations platform simulation designed for massive tournament venues. The application leverages a simulated sensor telemetry generator, Dijkstra indoor routing graphs, role-based access portals, and conversational LLM integrations to simulate crowd densities, safety alerts, and volunteer crew assignments.
 
 ---
 
@@ -17,6 +17,8 @@ ArenaMind AI is an enterprise-grade, production-ready full-stack stadium operati
 10. [Accessibility Measures (WCAG 2.2 AA)](#10-accessibility-measures-wcag-22-aa)
 11. [Performance Optimizations](#11-performance-optimizations)
 12. [Deployment Guide (Vercel & Node)](#12-deployment-guide-vercel--node)
+13. [Current Limitations & Roadmap to Production](#13-current-limitations--roadmap-to-production)
+14. [Future Roadmap](#14-future-roadmap)
 
 ---
 
@@ -44,7 +46,7 @@ ArenaMind AI solves these enterprise stadium operations challenges by creating a
 - **Mapping & Charts**: Leaflet (interactive cartographic map), Recharts (time-series risk indexes)
 - **Backend**: Node.js, Express, Helmet, CORS
 - **Generative AI**: Google Gemini API SDK (`@google/generative-ai`)
-- **Real-Time Data**: Firebase client and localStorage emulator synchronizer
+- **Real-Time Data**: Simulated Firestore-like local persistence layer (localStorage), designed with an interface compatible with a future real Firebase migration.
 - **Testing**: Vitest, JSDom, automated WCAG checker
 
 ---
@@ -54,7 +56,7 @@ ArenaMind AI solves these enterprise stadium operations challenges by creating a
 ```mermaid
 graph TD
     User([Spectator / Operator Browser]) -->|HTTPS / WSS| Frontend[React Client - SPA]
-    Frontend -->|Database Sync| Emulator[Firebase Firestore local database]
+    Frontend -->|Database Sync| Emulator[Simulated Firestore-like local persistence layer (localStorage)]
     Frontend -->|HTTPS Requests| ExpressServer[Node.js Express Server]
     
     subgraph Express Backend
@@ -289,9 +291,17 @@ Deploy the Express server and React client on Vercel:
 
 4. Confirm that client endpoints point correctly to the backend deployment base URL.
 
+## 13. Current Limitations & Roadmap to Production
+
+The current implementation of ArenaMind AI is designed as a high-fidelity local simulation. To prepare the application for real production workloads, the following limitations must be addressed:
+- **Client-Only Authentication**: The login and registration flows emulate Firebase auth on the client using Web Crypto and localStorage. A real Firebase Auth instance must be wired in.
+- **Client-Only RBAC**: Role validation occurs in the browser. In production, mutations must be protected by server-side middleware (Node.js) or database security rules (Firestore Security Rules).
+- **In-Memory Rate Limiting**: The API rate limiter runs in Node memory on a single process instance. Multi-instance serverless deployments (such as Vercel) require a shared, fast cache like Redis or Upstash to enforce rate limiting correctly.
+- **Simulated Telemetry**: Stadium data, weather adjustments, queue occupancy levels, and risk calculations are generated dynamically on the fly. Real IoT sensor streams and databases must replace these simulated telemetry generators.
+
 ---
 
-## 13. Future Roadmap
+## 14. Future Roadmap
 
 - **Multi-Agent Orchestration**: Integrate LangGraph to enable volunteer agents to communicate amongst themselves to balance gate queue workloads autonomously.
 - **Real-Time GPS Wayfinding**: Transition Leaflet static coordinates to live user geolocations via HTML5 Geolocation API parameters.
