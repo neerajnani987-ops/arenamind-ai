@@ -4,6 +4,7 @@
 > **How to evaluate this in under 2 minutes (Quick-Start Guide)**
 > - **Live Demo URL**: [https://arenamind-ai.vercel.app](https://arenamind-ai.vercel.app) (Verify production routing and layout)
 > - **Gemini API Configuration**: If the `GEMINI_API_KEY` environment variable is set in Vercel project settings, the chatbot queries the live Google Gemini API. If the key is missing or unset, the backend automatically activates the high-fidelity offline simulation mode, interpolating live telemetry (wait times, occupancy percentages, washroom status) directly into local multilingual answers without crashing the process.
+> - **WCAG 2.2 AA Compliance**: View our automated and manual keyboard navigation audits in [ACCESSIBILITY_TESTING.md](file:///c:/Users/Hemanth/.antigravity-ide/ACCESSIBILITY_TESTING.md).
 > - **Must-Try Features**:
 >   1. **Predictive Analytics (Organizer Dashboard)**: Open settings, adjust weather to "Rainy" or "Sunny" and spectator counts to "85,000", and observe how the Recharts graphs, Gate queue wait times, and resource allocations (security, medical, volunteers) recalculate mathematically.
 >   2. **Multilingual Telemetry Chat (Spectator / Operator Dashboard)**: Type queries such as "where is gate b" or "restroom wait time" in English, Telugu, or Hindi, and see live sensor state values interpolated dynamically into the answers.
