@@ -43,6 +43,88 @@ export const STADIUM_EDGES = [
   ['gate-b', 'gate-c', 170, 6, true],
 ];
 
+// Precompute adjacency map at module load
+export const ADJACENCY_MAP = new Map();
+for (const nodeId of Object.keys(STADIUM_NODES)) {
+  ADJACENCY_MAP.set(nodeId, []);
+}
+for (const edge of STADIUM_EDGES) {
+  const [u, v, dist, crowd, wheelchair] = edge;
+  if (ADJACENCY_MAP.has(u)) {
+    ADJACENCY_MAP.get(u).push({ node: v, dist, crowd, wheelchair });
+  }
+  if (ADJACENCY_MAP.has(v)) {
+    ADJACENCY_MAP.get(v).push({ node: u, dist, crowd, wheelchair });
+  }
+}
+
+// Binary Min-Heap implementation for O(log V) queue operations
+class MinHeap {
+  constructor() {
+    this.heap = [];
+  }
+
+  push(node, distance) {
+    this.heap.push({ node, distance });
+    this.bubbleUp(this.heap.length - 1);
+  }
+
+  pop() {
+    if (this.heap.length === 0) return null;
+    const min = this.heap[0];
+    const end = this.heap.pop();
+    if (this.heap.length > 0) {
+      this.heap[0] = end;
+      this.sinkDown(0);
+    }
+    return min;
+  }
+
+  bubbleUp(index) {
+    const element = this.heap[index];
+    while (index > 0) {
+      const parentIndex = Math.floor((index - 1) / 2);
+      const parent = this.heap[parentIndex];
+      if (element.distance >= parent.distance) break;
+      this.heap[index] = parent;
+      index = parentIndex;
+    }
+    this.heap[index] = element;
+  }
+
+  sinkDown(index) {
+    const length = this.heap.length;
+    const element = this.heap[index];
+    while (true) {
+      let leftChildIndex = 2 * index + 1;
+      let rightChildIndex = 2 * index + 2;
+      let swapIndex = null;
+
+      if (leftChildIndex < length) {
+        if (this.heap[leftChildIndex].distance < element.distance) {
+          swapIndex = leftChildIndex;
+        }
+      }
+
+      if (rightChildIndex < length) {
+        const leftDistance = swapIndex === null ? element.distance : this.heap[leftChildIndex].distance;
+        if (this.heap[rightChildIndex].distance < leftDistance) {
+          swapIndex = rightChildIndex;
+        }
+      }
+
+      if (swapIndex === null) break;
+      this.heap[index] = this.heap[swapIndex];
+      index = swapIndex;
+    }
+    this.heap[index] = element;
+  }
+
+  size() {
+    return this.heap.length;
+  }
+}
+
 // Graph routing calculation using Dijkstra with caching/memoization
 export const ROUTE_CACHE = new Map();
 
@@ -54,44 +136,34 @@ export function findShortestPath(startNode, endNode, routingType = 'fastest') {
 
   const distances = {};
   const previous = {};
-  const nodes = new Set(Object.keys(STADIUM_NODES));
+  const visited = new Set();
+  const heap = new MinHeap();
 
   // Initialize
-  for (const node of nodes) {
+  for (const node of Object.keys(STADIUM_NODES)) {
     distances[node] = Infinity;
     previous[node] = null;
   }
   distances[startNode] = 0;
+  heap.push(startNode, 0);
 
-  while (nodes.size > 0) {
-    // Find node with minimum distance
-    let closestNode = null;
-    for (const node of nodes) {
-      if (closestNode === null || distances[node] < distances[closestNode]) {
-        closestNode = node;
-      }
-    }
+  while (heap.size() > 0) {
+    const current = heap.pop();
+    if (!current) break;
+    const closestNode = current.node;
 
-    if (closestNode === null || distances[closestNode] === Infinity || closestNode === endNode) {
+    if (visited.has(closestNode)) continue;
+    visited.add(closestNode);
+
+    if (closestNode === endNode) {
       break;
     }
 
-    nodes.delete(closestNode);
-
-    // Get neighbors
-    const neighbors = [];
-    for (const edge of STADIUM_EDGES) {
-      const [u, v, dist, crowd, wheelchair] = edge;
-      if (routingType === 'wheelchair' && !wheelchair) continue;
-
-      if (u === closestNode && nodes.has(v)) {
-        neighbors.push({ node: v, dist, crowd });
-      } else if (v === closestNode && nodes.has(u)) {
-        neighbors.push({ node: u, dist, crowd });
-      }
-    }
-
+    const neighbors = ADJACENCY_MAP.get(closestNode) || [];
     for (const neighbor of neighbors) {
+      if (routingType === 'wheelchair' && !neighbor.wheelchair) continue;
+      if (visited.has(neighbor.node)) continue;
+
       let weight = neighbor.dist;
       if (routingType === 'least_crowded') {
         weight = neighbor.dist * (1 + neighbor.crowd * 0.5); // Inflate weight for crowded path
@@ -101,6 +173,7 @@ export function findShortestPath(startNode, endNode, routingType = 'fastest') {
       if (alt < distances[neighbor.node]) {
         distances[neighbor.node] = alt;
         previous[neighbor.node] = closestNode;
+        heap.push(neighbor.node, alt);
       }
     }
   }
@@ -123,12 +196,13 @@ export function findShortestPath(startNode, endNode, routingType = 'fastest') {
   for (let i = 0; i < path.length - 1; i++) {
     const u = path[i];
     const v = path[i + 1];
-    const edge = STADIUM_EDGES.find(
-      e => (e[0] === u && e[1] === v) || (e[0] === v && e[1] === u)
-    );
     
-    if (edge) {
-      const dist = edge[2];
+    // Find neighbor using adjacency map instead of full edges array scan
+    const neighborsOfU = ADJACENCY_MAP.get(u) || [];
+    const edgeData = neighborsOfU.find(n => n.node === v);
+    
+    if (edgeData) {
+      const dist = edgeData.dist;
       const speed = routingType === 'wheelchair' ? 1.0 : 1.4; // m/s walking speed
       const time = Math.round(dist / speed);
       totalTimeSec += time;
@@ -150,8 +224,9 @@ export function findShortestPath(startNode, endNode, routingType = 'fastest') {
       if (idx === 0) return true;
       const u = path[idx - 1];
       const v = nodeId;
-      const edge = STADIUM_EDGES.find(e => (e[0] === u && e[1] === v) || (e[0] === v && e[1] === u));
-      return edge ? edge[4] === true : true;
+      const neighborsOfU = ADJACENCY_MAP.get(u) || [];
+      const edgeData = neighborsOfU.find(n => n.node === v);
+      return edgeData ? edgeData.wheelchair === true : true;
     })
   };
 
