@@ -237,7 +237,7 @@ ArenaMind AI adheres to rigorous security compliance standards:
 - **IP-Based Rate Limiting**: Backend blocks client IPs exceeding 100 requests per 15 minutes to defend against DoS floods.
 - **Strict Content Security Policy (CSP)**: Helmet blocks unauthorized script executes, permitting resources exclusively from trusted cartography layers, google fonts, and firestore endpoints.
 - **Production Error Masking**: Express error boundaries capture exceptions privately, returning generic messages to clients in production mode to prevent stack trace leaks.
-- **Role-Based Access Control (RBAC)**: Firestore collection rules intercept operations. Spectators are blocked from writing or altering match records, gate flows, or parking configurations.
+- **Role-Based Access Control (RBAC)**: RBAC checks are implemented as UI-level controls. Since there are currently no state-mutating endpoints implemented on the backend server, RBAC is not enforced server-side. This control is browser-only and does not constitute a formal security boundary (e.g., users can directly modify local storage values). Real production environments must enforce these role boundaries via backend verification.
 
 ---
 

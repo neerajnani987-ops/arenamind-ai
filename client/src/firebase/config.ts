@@ -265,6 +265,12 @@ export const emulatedDb = new EmulatedFirestore();
 /**
  * Role-Based Access Control (RBAC) authorization checks for database mutations.
  * Throws an Error if the specified userRole does not have mutate permissions on the collection.
+ * 
+ * WARNING: This check is enforced only in the browser (client-side) and is NOT a security boundary.
+ * A malicious user can easily bypass this check by modifying localStorage values, tampering with the 
+ * client-side runtime JavaScript, or sending direct HTTP requests to the backend endpoints.
+ * Defense-in-depth requires that authorization controls must be replicated and validated on the backend
+ * server for all state-mutating transactions.
  */
 export function checkRoleAuthorization(userRole: UserRole, collectionName: string, action: 'create' | 'update'): void {
   if (action === 'update') {
