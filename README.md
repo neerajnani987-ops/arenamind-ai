@@ -233,12 +233,12 @@ npm run lint
 
 ## 9. Security Measures (OWASP & RBAC)
 
-ArenaMind AI adheres to rigorous security compliance standards:
-- **Input Sanitization**: Client and server parse string parameters against XSS injection tags, encoding `&`, `<`, `>`, `"`, `'`, `/` characters.
-- **Request Parameter Validation**: Node routers strictly validate types, bounds, and string parameters before executing logic (e.g. validating coordinate node bounds).
-- **IP-Based Rate Limiting**: Backend blocks client IPs exceeding 100 requests per 15 minutes to defend against DoS floods.
-- **Strict Content Security Policy (CSP)**: Helmet blocks unauthorized script executes, permitting resources exclusively from trusted cartography layers, google fonts, and firestore endpoints.
-- **Production Error Masking**: Express error boundaries capture exceptions privately, returning generic messages to clients in production mode to prevent stack trace leaks.
+ArenaMind AI implements key security measures to protect the platform:
+- **Input Sanitization**: Server-side request bodies are recursively sanitized before hitting API routers using the standard `sanitize-html` library to strip all HTML tags and attributes, preventing XSS injection. Client-side inputs are sanitized via local HTML entity encoding helpers.
+- **Request Parameter Validation**: Node routers strictly validate incoming parameters, types, and constraints before routing logic.
+- **IP-Based Rate Limiting**: Backend limits client IP requests (max 100 queries per 15 minutes) using an in-memory rate limiting middleware.
+- **Strict Content Security Policy (CSP)**: Helmet middleware enforces secure headers. The scriptSrc directive has been tightened to permit only `'self'`, blocking `'unsafe-inline'` and `'unsafe-eval'`.
+- **Production Error Masking**: Express server hides database or internal errors in production mode to avoid stack trace leaks.
 - **Role-Based Access Control (RBAC)**: RBAC checks are implemented as UI-level controls. Since there are currently no state-mutating endpoints implemented on the backend server, RBAC is not enforced server-side. This control is browser-only and does not constitute a formal security boundary (e.g., users can directly modify local storage values). Real production environments must enforce these role boundaries via backend verification.
 
 ---
@@ -250,6 +250,8 @@ Achieved full compliance under WCAG 2.2 AA parameters:
 - **Visible Focus Outlines**: Enforces clear visual outlines (`focus:ring-2 focus:ring-indigo-500 focus:outline-none`) on all form fields, select elements, and buttons.
 - **Landmark Segregations**: Expressive HTML elements (`role="application"`, `role="region"`, `role="list"`, `role="alert"`) guide screen readers.
 - **Aria Live regions**: Form warnings, voice transcription buffers, and ticket scans announce changes dynamically to assistive technologies.
+- **Interactive Map Labels**: Leaflet map custom markers are annotated with `aria-label`, `role="button"`, and `tabindex="0"` attributes. Route line paths are labeled with `aria-label`. Wayfinding directions are also displayed as readable screen-reader friendly text on the dashboards.
+- **Non-Speech / Typing Fallback**: A fully keyboard-accessible text query form is built into the AI Voice Assistant modal, allowing users with vocal/hearing impairments to converse with the system via typing.
 - **High Contrast Icons**: Visual markers and status alerts map directly to `sr-only` descriptions, explaining color codes to visually impaired individuals.
 
 ---
