@@ -27,6 +27,11 @@ app.use(compression());
 const PORT = process.env.PORT || 5000;
 
 // 2. In-memory Rate Limiting Middleware
+// NOTE: This implementation is in-memory and stores IP request records locally. 
+// It will NOT function correctly across multiple server instances or serverless environment deployments 
+// (such as Vercel, where server processes are stateless, distributed, and transient).
+// For production multi-instance workloads, a distributed rate-limiter backed by a persistent,
+// high-speed database like Redis or Upstash is highly recommended.
 const rateLimitMap = new Map();
 const rateLimiter = (limit, windowMs) => {
   return (req, res, next) => {
