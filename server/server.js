@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import dotenv from 'dotenv';
 import compression from 'compression';
 import router from './router.js';
+import sanitizeHtml from 'sanitize-html';
 
 dotenv.config();
 
@@ -45,22 +46,14 @@ const rateLimiter = (limit, windowMs) => {
   };
 };
 
-// 3. Custom XSS Request Input Sanitizer Middleware
+// 3. Custom XSS Request Input Sanitizer Middleware using sanitize-html
 const sanitizeString = (str) => {
   if (typeof str !== 'string') return str;
-  return str
-    .replace(/<[^>]*>/g, '') // strip active html tags
-    .replace(/[&<>"'/]/g, (match) => {
-      const encodingMap = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#x27;',
-        '/': '&#x2F;',
-      };
-      return encodingMap[match] || match;
-    });
+  return sanitizeHtml(str, {
+    allowedTags: [],
+    allowedAttributes: {},
+    disallowedTagsMode: 'discard'
+  });
 };
 
 const sanitizeBody = (req, res, next) => {
