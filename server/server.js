@@ -78,7 +78,9 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      // 'unsafe-inline' and 'unsafe-eval' are omitted to prevent XSS injection attacks.
+      // Scripts are loaded exclusively as external JavaScript files from the origin.
+      scriptSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
       imgSrc: ["'self'", "data:", "blob:", "https://images.unsplash.com", "https://firebasestorage.googleapis.com"],
