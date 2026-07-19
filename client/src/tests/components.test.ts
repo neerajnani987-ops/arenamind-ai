@@ -1,76 +1,65 @@
 // @vitest-environment jsdom
 import { describe, it, expect } from 'vitest';
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+
+import { Button } from '../components/ui/Button';
+import { Input } from '../components/ui/Input';
+import { Card } from '../components/ui/Card';
+import { StadiumLegend } from '../components/ui/StadiumLegend';
+import { ProblemSolutionBenefit } from '../components/ui/ProblemSolutionBenefit';
 
 describe('UI Shared Core Components Validation', () => {
   describe('Button component properties', () => {
     it('should resolve style variant maps correctly', () => {
-      const getStyles = (variant: 'primary' | 'secondary' | 'danger' | 'ghost') => {
-        const variants = {
-          primary: "bg-indigo-600 hover:bg-indigo-700 text-white shadow-neon",
-          secondary: "bg-white/5 border border-white/10 hover:bg-white/10 text-white",
-          danger: "bg-rose-600 hover:bg-rose-700 text-white shadow-neon-rose",
-          ghost: "bg-transparent hover:bg-white/5 text-white/70 hover:text-white"
-        };
-        return variants[variant];
-      };
+      render(React.createElement(Button, { variant: 'primary' }, 'Click me'));
+      const btn = screen.getByRole('button', { name: 'Click me' });
+      expect(btn.className).toContain('bg-indigo-600');
 
-      expect(getStyles('primary')).toContain('bg-indigo-600');
-      expect(getStyles('danger')).toContain('bg-rose-600');
-      expect(getStyles('secondary')).toContain('bg-white/5');
-      expect(getStyles('ghost')).toContain('bg-transparent');
+      render(React.createElement(Button, { variant: 'danger' }, 'Delete'));
+      const btnDanger = screen.getByRole('button', { name: 'Delete' });
+      expect(btnDanger.className).toContain('bg-rose-600');
     });
   });
 
   describe('Input component error states', () => {
     it('should show border-rose-500 styles when validation error message is loaded', () => {
-      const getErrorClass = (error?: string) => {
-        return error ? 'border-rose-500 focus:ring-rose-500' : '';
-      };
-      expect(getErrorClass('Email is required')).toContain('border-rose-500');
-      expect(getErrorClass(undefined)).toBe('');
+      render(React.createElement(Input, { label: 'Username', error: 'Email is required' }));
+      const errorMsg = screen.getByRole('alert');
+      expect(errorMsg.textContent).toBe('Email is required');
+      
+      const input = screen.getByLabelText('Username');
+      expect(input.className).toContain('border-rose-500');
     });
   });
 
   describe('Card component layout outlines', () => {
     it('should output default rounded corners and glass panel classes', () => {
-      const cardProps = {
-        className: 'glass-panel p-5 rounded-xl border border-white/10 shadow-glass'
-      };
-      expect(cardProps.className).toContain('glass-panel');
-      expect(cardProps.className).toContain('rounded-xl');
+      render(React.createElement(Card, { className: 'custom-class' }, 'Content'));
+      const card = screen.getByText('Content');
+      expect(card.className).toContain('glass-panel');
+      expect(card.className).toContain('rounded-xl');
+      expect(card.className).toContain('custom-class');
     });
   });
 
   describe('StadiumLegend items definitions', () => {
     it('should verify all markers and route colors indicators mapping is complete', () => {
-      const indicators = [
-        { label: 'Normal / Low Crowds', class: 'marker-pulse-emerald' },
-        { label: 'High Congestion / Alert', class: 'marker-pulse-rose' },
-        { label: 'Medium Density', class: 'bg-amber-500' },
-        { label: 'Active Navigation Route', class: 'border-[#6366f1]' }
-      ];
-
-      expect(indicators.length).toBe(4);
-      expect(indicators[0].class).toBe('marker-pulse-emerald');
-      expect(indicators[1].class).toBe('marker-pulse-rose');
-      expect(indicators[2].class).toBe('bg-amber-500');
-      expect(indicators[3].class).toBe('border-[#6366f1]');
+      render(React.createElement(StadiumLegend, { hasRoute: true }));
+      expect(screen.getByText('Stadium Legend')).not.toBeNull();
+      expect(screen.getByText('Normal / Low Crowds')).not.toBeNull();
+      expect(screen.getByText('High Congestion / Alert')).not.toBeNull();
+      expect(screen.getByText('Medium Density')).not.toBeNull();
+      expect(screen.getByText('Active Navigation Route')).not.toBeNull();
     });
   });
 
   describe('ProblemSolutionBenefit structural data', () => {
-    it('should assert all 5 support pages details are predefined', () => {
-      const PAGES_METADATA = {
-        landing: { problem: 'concession lines', solution: 'Dijkstra', benefit: 'save 19 mins' },
-        login: { problem: 'unauthorized access', solution: 'RBAC', benefit: 'local terminals' },
-        signup: { problem: 'ticket validation', solution: 'onboarding', benefit: 'voice helpers' },
-        'forgot-password': { problem: 'account lockout', solution: 'encrypted link', benefit: 'seconds control' },
-        dashboard: { problem: 'complex telemetry', solution: 'sensor logs', benefit: '5 seconds check' }
-      };
-
-      expect(PAGES_METADATA.landing.benefit).toBeDefined();
-      expect(PAGES_METADATA.dashboard.solution).toContain('sensor');
-      expect(PAGES_METADATA.login.problem).toContain('unauthorized');
+    it('should assert all page details are predefined', () => {
+      render(React.createElement(ProblemSolutionBenefit, { page: 'landing' }));
+      expect(screen.getByText(/concession lines/i)).not.toBeNull();
+      expect(screen.getByText(/Dijkstra graph/i)).not.toBeNull();
+      expect(screen.getByText(/save up to 19 minutes/i)).not.toBeNull();
     });
   });
 });
