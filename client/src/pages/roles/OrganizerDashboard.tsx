@@ -14,6 +14,8 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
+const EMPTY_ARRAY: any[] = [];
+
 export const OrganizerDashboard: React.FC = React.memo(() => {
   // Announcement states
   const [announcementText, setAnnouncementText] = useState('');
@@ -236,7 +238,7 @@ export const OrganizerDashboard: React.FC = React.memo(() => {
           <StadiumMap
             heatmapMode={true}
             selectedCategory="all"
-            routeCoordinates={evacRoute?.coordinates || []}
+            routeCoordinates={evacRoute?.coordinates || EMPTY_ARRAY}
           />
         </div>
       </div>

@@ -15,6 +15,8 @@ import {
   ChevronRight
 } from 'lucide-react';
 
+const EMPTY_ARRAY: any[] = [];
+
 export const MedicalDashboard: React.FC = React.memo(() => {
   const { data: alerts, updateItem: updateAlert } = useRealtimeCollection<Alert>('alerts');
   const medicalAlerts = useMemo(() => alerts.filter(a => a.type === 'medical' && a.status === 'active'), [alerts]);
@@ -165,7 +167,7 @@ export const MedicalDashboard: React.FC = React.memo(() => {
           <StadiumMap
             heatmapMode={false}
             selectedCategory="medical"
-            routeCoordinates={activeDispatchRoute?.coordinates || []}
+            routeCoordinates={activeDispatchRoute?.coordinates || EMPTY_ARRAY}
           />
         </div>
       </div>

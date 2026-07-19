@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { useRealtimeCollection } from '../../firebase/config';
 
+const EMPTY_ARRAY: any[] = [];
+
 export const SpectatorDashboard: React.FC = React.memo(() => {
   const [chatLanguage, setChatLanguage] = useState('english');
   const [chatInput, setChatInput] = useState('');
@@ -266,7 +268,7 @@ export const SpectatorDashboard: React.FC = React.memo(() => {
           <StadiumMap
             heatmapMode={mapHeatmap}
             selectedCategory={mapCategory}
-            routeCoordinates={activeRoute?.coordinates || []}
+            routeCoordinates={activeRoute?.coordinates || EMPTY_ARRAY}
             onMarkerClick={setTargetFromMap}
           />
         </div>
